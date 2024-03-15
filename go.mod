@@ -1,3 +1,3 @@
-module github.com/heytom7/cache2go
+module github.com/bhluo/cache2go
 
 go 1.15
