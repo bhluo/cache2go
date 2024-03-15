@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/heytom7/cache2go"
+	"github.com/bhluo/cache2go"
 	"strconv"
 )
 
