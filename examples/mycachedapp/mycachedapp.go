@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/heytom7/cache2go"
+	"github.com/bhluo/cache2go"
 )
 
 var text string
