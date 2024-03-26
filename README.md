@@ -8,7 +8,7 @@
 
 Concurrency-safe golang caching library with expiration capabilities.
 
-This is a personal Go learning project, on the basis of the original project added the function of interacting and returning all the item data in the table, so that the user can more conveniently experience the functions of adding, deleting, querying and so on. The project source address is <https://github.com/muesli/cache2go>, and we would like to thank the original author for his contribution.
+This is a personal Go learning project, on the basis of the original project added the function of interacting ,added an Update function, optimized the background garbage cleaning function adn added a function that returns all elements in the table, so that the user can more conveniently experience the functions of adding, deleting, querying and so on. The project source address is <https://github.com/muesli/cache2go>, and we would like to thank the original author for his contribution.
 
 ## Installation
 
