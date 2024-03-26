@@ -47,6 +47,37 @@ func (table *CacheTable) Count() int {
 	return len(table.items)
 }
 
+// Set 添加或更新缓存项
+func (table *CacheTable) Update(key string, value interface{}, ttl time.Duration) (*CacheItem, error) {
+	table.Lock()
+	defer table.Unlock()
+
+	item, exists := table.items[key]
+	if !exists {
+		return nil, ErrKeyNotFound
+	}
+	item.Lock()
+	defer item.Unlock()
+	item.data = value
+	item.accessedOn = time.Now()
+	item.accessCount++ //访问次数++
+	return item, nil
+}
+
+// Get 获取缓存项的值
+func (table *CacheTable) Get(key string) (interface{}, bool) {
+	table.RLock()
+	defer table.RUnlock()
+
+	item, exists := table.items[key]
+	if !exists || time.Now().After(item.accessedOn.Add(item.lifeSpan)) {
+		return nil, false
+	}
+	item.RLock()
+	defer item.RUnlock()
+	return item.data, true
+}
+
 // GetItems returns items of specified CacheTable.
 func (table *CacheTable) GetItems() map[interface{}]*CacheItem {
 	table.RLock()
@@ -212,6 +243,7 @@ func (table *CacheTable) Add(key interface{}, lifeSpan time.Duration, data inter
 	item := NewCacheItem(key, lifeSpan, data)
 
 	// Add item to cache.
+	//表上锁
 	table.Lock()
 	table.addInternal(item)
 
@@ -244,7 +276,7 @@ func (table *CacheTable) deleteInternal(key interface{}) (*CacheItem, error) {
 	}
 
 	table.Lock()
-	table.log("Deleting item with key", key, "created on", r.createdOn, "and hit", r.accessCount, "times from table", table.name)
+	table.log("Item with key", key, "has been deleted")
 	delete(table.items, key)
 
 	return r, nil

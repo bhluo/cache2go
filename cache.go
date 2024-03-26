@@ -1,15 +1,10 @@
-/*
- * Simple caching library with expiration capabilities
- *     Copyright (c) 2012, Radu Ioan Fericean
- *                   2013-2017, Christian Muehlhaeuser <muesli@gmail.com>
- *
- *   For license see LICENSE.txt
- */
-
 package cache2go
 
 import (
+	"log"
+	"os"
 	"sync"
+	"time"
 )
 
 var (
@@ -32,10 +27,14 @@ func Cache(table string) *CacheTable {
 		// Double check whether the table exists or not.
 		if !ok {
 			t = &CacheTable{
-				name:  table,
-				items: make(map[interface{}]*CacheItem),
+				name:            table,
+				items:           make(map[interface{}]*CacheItem),
+				cleanupInterval: 5 * time.Minute, // 默认清理间隔为5分钟
+				logger:          log.New(os.Stderr, "cache2go: ", log.LstdFlags),
 			}
 			cache[table] = t
+
+			go t.expirationCheck()
 		}
 		mutex.Unlock()
 	}
